@@ -30,6 +30,7 @@
 }
 
 
+//通过dispatch group实现多个请求并发，都完成后回调
 - (IBAction)serialQueueRequest:(id)sender {
     dispatch_group_t dispatchGroup = dispatch_group_create();
     
@@ -54,6 +55,7 @@
     
 }
 
+//通过dispatch group和dispatch semaphore信号量 实现指定最大并发数的多任务请求
 - (IBAction)downloadGroup:(id)sender {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(3);
     
@@ -96,6 +98,7 @@
     });
 }
 
+//通过NSOperationQueue 和dispatch semaphore 及kvo 实现对多个异步请求串行执行并监听
 - (IBAction)serialSemaphore:(id)sender {
     
     NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
@@ -167,6 +170,7 @@
     }
 }
 
+//通过dispatch queue 和dispatch semaphore 实现多个异步请求串行执行
 - (IBAction)serialGroupCallBack:(id)sender {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
