@@ -173,7 +173,7 @@
 //通过dispatch queue 和dispatch semaphore 实现多个异步请求串行执行
 - (IBAction)serialGroupCallBack:(id)sender {
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(1);
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    dispatch_queue_t queue = dispatch_queue_create("com.gameDemo.serialTask", DISPATCH_QUEUE_SERIAL);
     
     dispatch_async( queue, ^{
         dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);//信号量 -1
