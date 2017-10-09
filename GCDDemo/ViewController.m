@@ -296,6 +296,58 @@
     completionHandler(disposition, credential);
 }
 
+- (IBAction)groupSync:(id)sender
+{
+    [self tasksForKeyPath];
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_enter(group);
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        
+        NSURLSession *session = [NSURLSession sharedSession];
+        NSURLSessionDataTask *task2 = [session dataTaskWithURL:[NSURL URLWithString:KWeatherURL] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            NSLog(@"任务一完成");
+            dispatch_group_leave(group);
+        }];
+        [task2 resume];
+    });
+    dispatch_group_enter(group);
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+
+        NSLog(@"任务二完成");
+        dispatch_group_leave(group);
+    });
+    dispatch_group_notify(group, dispatch_get_global_queue(0, 0), ^{
+        NSLog(@"任务完成");
+    });
+}
+
+- (NSInteger)tasksForKeyPath {
+    __block NSInteger count = 0;
+//    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    
+    [self calculateWithCompletion:^(NSInteger number) {
+        NSLog(@"count == %@",@(number));
+        count = number;
+//        dispatch_semaphore_signal(semaphore);
+    }];
+    
+//    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    
+    return count;
+}
+
+- (void)calculateWithCompletion:(void (^)(NSInteger number))completionHandler {
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSInteger total = 0;
+        for (int i = 0; i < 10000*1000 ; i++) {
+            total = total + i;
+//            NSLog(@"i=%@",@(i));
+        }
+        completionHandler(total);
+    });
+}
+
 #pragma mark httpDNS AFNetworking
 - (IBAction)httpDNSRqeusetAF:(id)sender {
     NSURL *originalUrl =[NSURL URLWithString:KDouBanURL];
